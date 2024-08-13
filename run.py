@@ -18,7 +18,7 @@ from tools import similar_art_search, qa_with_explain, empathize_with_user, norm
 from langchain_core.output_parsers import StrOutputParser
 from gtts import gTTS
 import tempfile
-
+import math
 
 # 환경 변수 로드
 load_dotenv()
@@ -150,9 +150,19 @@ def get_all_artworks():
     search_dict = {}
     for idx, item in enumerate(all_list):
         if idx < len(bokcheon_list):
-            search_dict[item] = {'index': bokcheon_df.iloc[idx]['번호'], 'source': 'bokcheon'}
+            number = bokcheon_df.iloc[idx]['번호']
+            index = int(number) if not math.isnan(number) else None
+            search_dict[item] = {
+                'index': index,
+                'source': 'bokcheon'
+            }
         else:
-            search_dict[item] = {'index': tal_df.iloc[idx - len(bokcheon_list)]['번호'], 'source': 'tal'}
+            number = tal_df.iloc[idx - len(bokcheon_list)]['번호']
+            index = int(number) if not math.isnan(number) else None
+            search_dict[item] = {
+                'index': index,
+                'source': 'tal'
+            }
     
     return all_list, json.dumps(search_dict, ensure_ascii=False)
 
@@ -359,7 +369,7 @@ css = """
 #chat_img Column {align-items: center;}
 """
 # 이미지 파일 경로 지정
-IMAGE_PATH = "C:\비전공자 하삼동\chatbot(upstagever)\data\dosent pictures.webp" # 여기에 실제 이미지 파일 경로를 입력하세요
+IMAGE_PATH = "C:\비전공자 하삼동\hasamdong_docent-matter\data\dosent pictures.webp" # 여기에 실제 이미지 파일 경로를 입력하세요
 
 # Gradio 인터페이스 구성
 with gr.Blocks(title="박물관 AI 가이드", css=css, theme=gr.themes.Soft()) as demo:
